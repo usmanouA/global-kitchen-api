@@ -13,10 +13,51 @@ app.get('/', (req, res) => {
 
 app.use('/recipes', recipeRoutes);
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'Route not found',
+    statusCode: 404,
+  });
+});
+
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error',
+  console.error('Error:', err);
+
+  const statusCode = err.statusCode || err.status || 500;
+  const message = err.message || 'Internal Server Error';
+
+  if (err.name === 'ValidationError') {
+    const validationErrors = Object.values(err.errors).map((e) => e.message);
+    return res.status(400).json({
+      success: false,
+      error: 'Validation failed',
+      statusCode: 400,
+      details: validationErrors,
+    });
+  }
+
+  if (err.name === 'CastError') {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid ID format',
+      statusCode: 400,
+    });
+  }
+
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern)[0];
+    return res.status(400).json({
+      success: false,
+      error: `${field} already exists`,
+      statusCode: 400,
+    });
+  }
+
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+    statusCode,
   });
 });
 

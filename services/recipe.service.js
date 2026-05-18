@@ -9,7 +9,9 @@ const getAllRecipes = async (category) => {
 const getRecipeById = async (recipeId) => {
   const recipe = await Recipe.findById(recipeId);
   if (!recipe) {
-    throw new Error('Recipe not found');
+    const error = new Error('Recipe not found');
+    error.statusCode = 404;
+    throw error;
   }
   return recipe;
 };
@@ -31,7 +33,9 @@ const updateRecipe = async (recipeId, recipeData) => {
     }
   );
   if (!updatedRecipe) {
-    throw new Error('Recipe not found');
+    const error = new Error('Recipe not found');
+    error.statusCode = 404;
+    throw error;
   }
   return updatedRecipe;
 };
@@ -39,7 +43,9 @@ const updateRecipe = async (recipeId, recipeData) => {
 const deleteRecipe = async (recipeId) => {
   const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
   if (!deletedRecipe) {
-    throw new Error('Recipe not found');
+    const error = new Error('Recipe not found');
+    error.statusCode = 404;
+    throw error;
   }
   return deletedRecipe;
 };
