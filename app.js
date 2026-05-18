@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
+const recipeRoutes = require('./routes/recipe.routes');
 
 const app = express();
 
@@ -9,6 +10,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({ message: 'The Global Kitchen API' });
 });
+
+app.use('/recipes', recipeRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
